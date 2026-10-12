@@ -1,0 +1,178 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
+<meta name="theme-color" content="#0b0d10"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+<meta name="apple-mobile-web-app-title" content="Physique"/>
+<link rel="manifest" href="manifest.webmanifest"/>
+<link rel="apple-touch-icon" href="icon-192.png"/>
+<title>Physique Log</title>
+<style>
+:root{--bg:#0b0d10;--card:#15191f;--card2:#101419;--text:#f6f8fb;--muted:#98a2b3;--line:#2a313c;--accent:#7dd3fc;--green:#a7f3d0;--amber:#fde68a}
+*{box-sizing:border-box}html,body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Hiragino Sans","Yu Gothic",sans-serif}body{padding-bottom:88px}
+header{position:sticky;top:0;z-index:10;padding:14px 16px;background:rgba(11,13,16,.92);backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}
+header h1{margin:0;font-size:20px}.sub{color:var(--muted);font-size:12px;margin-top:3px}
+main{max-width:760px;margin:auto;padding:14px}.card{background:linear-gradient(180deg,var(--card),#11151a);border:1px solid var(--line);border-radius:18px;padding:16px;margin-bottom:14px}
+h2{font-size:18px;margin:0 0 12px}h3{font-size:15px;margin:14px 0 8px}.muted{color:var(--muted);font-size:13px}.small{font-size:12px}
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.row{display:flex;gap:8px;align-items:center}.row>*{flex:1}.auto{flex:0 0 auto!important}
+label{font-size:12px;color:var(--muted);display:block;margin-bottom:5px}input,select,textarea,button{font:inherit}
+input,select,textarea{width:100%;background:#0f1318;color:var(--text);border:1px solid var(--line);border-radius:12px;padding:11px}textarea{min-height:88px;resize:vertical}
+button{border:0;border-radius:12px;padding:11px 14px;background:var(--accent);color:#06121a;font-weight:750}.secondary{background:#222935;color:#e7edf5;border:1px solid var(--line)}
+.exercise{padding:12px;background:var(--card2);border:1px solid var(--line);border-radius:14px;margin:8px 0}.exercise b{font-size:14px}
+.exercise-grid{display:grid;grid-template-columns:1.5fr .75fr .7fr .7fr;gap:6px;margin-top:8px}.exercise-grid input{padding:9px;font-size:13px}
+.kpi{background:var(--card2);border:1px solid var(--line);border-radius:14px;text-align:center;padding:12px}.kpi b{display:block;font-size:22px}
+.badge{display:inline-block;padding:5px 9px;border-radius:999px;background:#202733;color:#c8d1dc;font-size:12px;margin:3px}.accent{background:#153143;color:#d8f4ff}
+.tab{display:none}.tab.active{display:block}.check{display:flex;align-items:center;gap:10px;padding:10px;border:1px solid var(--line);border-radius:12px;margin:7px 0}.check input{width:20px;height:20px}
+nav{position:fixed;bottom:0;left:0;right:0;z-index:20;background:rgba(11,13,16,.96);backdrop-filter:blur(14px);border-top:1px solid var(--line);display:grid;grid-template-columns:repeat(5,1fr);padding:7px 8px calc(7px + env(safe-area-inset-bottom))}
+nav button{background:transparent;color:var(--muted);padding:7px 2px;font-size:11px}nav button.active{color:#fff;background:#1b232d}
+.timer{font-size:42px;font-weight:800;text-align:center}.progress{height:9px;background:#0f1318;border:1px solid var(--line);border-radius:99px;overflow:hidden}.progress>div{height:100%;width:0;background:var(--accent)}
+.toast{position:fixed;left:50%;bottom:88px;transform:translateX(-50%);background:#eaf7ff;color:#07131a;padding:10px 14px;border-radius:12px;font-weight:750;opacity:0;pointer-events:none;transition:.2s;z-index:30}.toast.show{opacity:1}
+pre{white-space:pre-wrap;background:#0d1116;border:1px solid var(--line);padding:12px;border-radius:12px;color:#eaf2fb;font-size:13px}
+canvas{width:100%;height:220px;background:#0f1318;border-radius:14px;border:1px solid var(--line)}
+.install{background:linear-gradient(135deg,#173143,#183328)}
+@media(min-width:650px){.grid{grid-template-columns:repeat(4,1fr)}}
+</style>
+</head>
+<body>
+<header><h1>Physique Log</h1><div class="sub">Vテーパー・腹部コントロール・筋トレ記録</div></header>
+<main>
+<section id="today" class="tab active">
+  <div class="card install" id="installCard">
+    <h2>iPhoneに追加</h2>
+    <div class="muted">Safariで開き、共有 →「ホーム画面に追加」でアプリのように使えます。追加後はオフラインでも動作します。</div>
+  </div>
+  <div class="card">
+    <h2>今日</h2>
+    <div class="grid3">
+      <div class="kpi"><b id="streak">0</b><span class="muted">連続記録</span></div>
+      <div class="kpi"><b id="weekCount">0</b><span class="muted">今週トレ</span></div>
+      <div class="kpi"><b id="proteinKpi">0</b><span class="muted">Protein g</span></div>
+    </div>
+    <h3>チェック</h3>
+    <div class="check"><input id="cPosture" type="checkbox"><div><b>姿勢</b><div class="muted">肋骨を骨盤の真上へ</div></div></div>
+    <div class="check"><input id="cCore" type="checkbox"><div><b>腹部5分</b><div class="muted">呼吸＋腹圧＋骨盤コントロール</div></div></div>
+    <div class="check"><input id="cTrain" type="checkbox"><div><b>トレーニング</b></div></div>
+    <div class="check"><input id="cProtein" type="checkbox"><div><b>たんぱく質 120〜130g</b></div></div>
+    <div class="grid" style="margin-top:10px"><div><label>たんぱく質 g</label><input id="proteinG" type="number"></div><div><label>体重 kg</label><input id="quickWeight" type="number" step="0.1"></div></div>
+    <button style="margin-top:10px;width:100%" onclick="saveDaily()">今日を保存</button>
+  </div>
+  <div class="card">
+    <h2>腹部 5分ルーティン</h2>
+    <div id="routineName" style="text-align:center;font-weight:750">90/90呼吸</div>
+    <div id="timer" class="timer">01:00</div><div class="progress"><div id="timerBar"></div></div>
+    <div class="row" style="margin-top:10px"><button onclick="startRoutine()">開始</button><button class="secondary" onclick="pauseRoutine()">停止</button><button class="secondary" onclick="resetRoutine()">リセット</button></div>
+    <div class="muted small" style="margin-top:10px">90/90呼吸 → デッドバグ → リバースクランチ → RKCプランク → グルートブリッジ</div>
+  </div>
+  <div class="card">
+    <h2>姿勢キュー</h2>
+    <span class="badge accent">顎を軽く引く</span><span class="badge accent">肩をすくめない</span><span class="badge accent">肋骨を軽く下げる</span><span class="badge accent">腹は360°に軽く張る</span><span class="badge accent">骨盤は中立</span><span class="badge accent">臀部2割</span>
+    <p class="muted">「胸を張る」より「肋骨を骨盤の上に置く」が目標です。</p>
+  </div>
+</section>
+
+<section id="workout" class="tab">
+  <div class="card">
+    <h2>今日のプラン</h2>
+    <div class="row"><select id="planDay" onchange="renderPlan()"><option value="0">Day1 胸＋肩</option><option value="1">Day2 背中＋腹</option><option value="2">Day3 脚</option><option value="3">Day4 肩＋腕</option><option value="4">Day5 上胸＋背中幅＋腹</option></select><button class="secondary auto" onclick="loadPlan()">記録へ</button></div>
+    <div id="planBox"></div>
+  </div>
+  <div class="card">
+    <h2>トレーニング記録</h2>
+    <div class="grid"><div><label>日付</label><input id="wDate" type="date"></div><div><label>体重</label><input id="wBody" type="number" step="0.1"></div><div><label>睡眠h</label><input id="wSleep" type="number" step="0.1"></div><div><label>調子1-5</label><input id="wFeel" type="number" min="1" max="5"></div></div>
+    <div id="exerciseList"></div>
+    <div class="row"><button class="secondary" onclick="addExercise()">＋種目</button><button onclick="saveWorkout()">保存</button></div>
+  </div>
+  <div class="card"><h2>前回・PR</h2><div id="prBox" class="muted">記録すると自動表示されます。</div></div>
+  <div class="card"><h2>最近の記録</h2><div id="recentWorkouts" class="muted">まだありません。</div></div>
+</section>
+
+<section id="body" class="tab">
+  <div class="card">
+    <h2>体型ログ</h2>
+    <div class="grid"><div><label>体重 kg</label><input id="bWeight" type="number" step="0.1"></div><div><label>体脂肪計 %</label><input id="bFat" type="number" step="0.1"></div><div><label>ウエスト cm</label><input id="bWaist" type="number" step="0.1"></div><div><label>腹部の張り1-5</label><input id="bBloat" type="number" min="1" max="5"></div></div>
+    <label style="margin-top:10px">メモ</label><textarea id="bNote" placeholder="朝/夜の違い、食後の張り、姿勢など"></textarea>
+    <button style="margin-top:10px;width:100%" onclick="saveBody()">保存</button>
+  </div>
+  <div class="card"><h2>推移</h2><canvas id="chart" width="700" height="220"></canvas><div class="muted small">体重とウエストの直近推移</div></div>
+  <div class="card">
+    <h2>あなたの優先順位</h2>
+    <div class="exercise"><b>① 中部三角筋</b><div class="muted">サイドレイズ中心。肩幅を作り、相対的に腰を細く見せる。</div></div>
+    <div class="exercise"><b>② 広背筋の幅</b><div class="muted">懸垂・ラットプル・ワンハンドプル。</div></div>
+    <div class="exercise"><b>③ 上胸</b><div class="muted">インクラインプレス＋ローtoハイフライ。</div></div>
+    <div class="exercise"><b>④ 腹部コントロール</b><div class="muted">呼吸・デッドバグ・リバースクランチ・アブローラー。</div></div>
+    <div class="exercise"><b>⑤ 脚は維持寄り</b><div class="muted">RDL、ブルガリアン、カール、カーフ。四頭筋の増量は優先しない。</div></div>
+  </div>
+</section>
+
+<section id="post" class="tab">
+  <div class="card">
+    <h2>Instagram日記</h2>
+    <div class="grid"><div><label>日付</label><input id="pDate" type="date"></div><div><label>タイトル</label><input id="pTitle" placeholder="Chest / Back"></div></div>
+    <label style="margin-top:10px">一言</label><input id="pComment" placeholder="重量上がった">
+    <label style="margin-top:10px">種目</label><textarea id="pExercises" placeholder="ベンチプレス 55kg 8×3&#10;インクラインスミス 50kg 10×3"></textarea>
+    <div class="row" style="margin-top:10px"><button onclick="buildPost()">生成</button><button class="secondary" onclick="copyPost()">コピー</button></div>
+    <pre id="postOutput">ここに投稿文が出ます。</pre>
+  </div>
+</section>
+
+<section id="data" class="tab">
+  <div class="card">
+    <h2>バックアップ</h2><div class="muted">端末内保存です。機種変更やSafariデータ削除に備えてJSONを定期保存してください。</div>
+    <div class="row" style="margin-top:10px"><button onclick="exportJSON()">JSON</button><button class="secondary" onclick="exportCSV()">CSV</button></div>
+    <label style="margin-top:14px">JSONを復元</label><input id="importFile" type="file" accept=".json,application/json"><button class="secondary" style="margin-top:10px;width:100%" onclick="importJSON()">読み込み</button>
+  </div>
+</section>
+</main>
+
+<nav><button class="active" onclick="showTab('today',this)">今日</button><button onclick="showTab('workout',this)">筋トレ</button><button onclick="showTab('body',this)">体型</button><button onclick="showTab('post',this)">投稿</button><button onclick="showTab('data',this)">データ</button></nav>
+<div id="toast" class="toast">保存しました</div>
+
+<script>
+const $=id=>document.getElementById(id), DBKEY='physique_log_pwa_v2';
+let db=JSON.parse(localStorage.getItem(DBKEY)||'{"daily":{},"workouts":[],"body":[]}');
+const plans=[
+[["ベンチプレス",4,"6-10"],["インクラインプレス",4,"6-10"],["フライ",3,"10-15"],["サイドレイズ",4,"12-20"],["リアデルト",3,"12-20"]],
+[["懸垂/ラットプル",4,"6-12"],["ワンハンドラットプル",3,"8-12"],["ロウ",3,"8-12"],["ストレートアームプル",3,"12-15"],["デッドバグ",3,"左右8-12"],["リバースクランチ",3,"10-15"]],
+[["RDL",3,"6-10"],["ブルガリアンスクワット",3,"8-12"],["レッグカール",3,"10-15"],["カーフレイズ",4,"10-20"],["グルートブリッジ",3,"10-15"]],
+[["ショルダープレス",3,"6-10"],["サイドレイズ",5,"12-20"],["リアデルト",4,"12-20"],["インクラインカール",3,"8-12"],["プッシュダウン",3,"8-12"],["オーバーヘッドEX",3,"10-15"]],
+[["インクラインプレス",4,"6-10"],["ローtoハイフライ",3,"10-15"],["ラットプル",4,"8-12"],["ストレートアームプル",3,"12-15"],["アブローラー",3,"6-12"],["RKCプランク",3,"20-40秒"]]
+];
+const todayISO=()=>new Date().toISOString().slice(0,10); $('wDate').value=$('pDate').value=todayISO();
+function save(){localStorage.setItem(DBKEY,JSON.stringify(db));refresh()}
+function toast(m='保存しました'){let t=$('toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),1400)}
+function showTab(id,b){document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));$(id).classList.add('active');document.querySelectorAll('nav button').forEach(x=>x.classList.remove('active'));b.classList.add('active');if(id==='body')drawChart();scrollTo({top:0,behavior:'smooth'})}
+function renderPlan(){let p=plans[+$('planDay').value];$('planBox').innerHTML=p.map(x=>`<div class="exercise"><b>${x[0]}</b><div class="muted">${x[1]}セット × ${x[2]}</div></div>`).join('')} renderPlan();
+function addExercise(n='',s='',r='',w=''){let d=document.createElement('div');d.className='exercise';d.innerHTML=`<div class="row"><input placeholder="種目" value="${n}"><button class="secondary auto" onclick="this.closest('.exercise').remove()">×</button></div><div class="exercise-grid"><input placeholder="重量kg" value="${w}"><input placeholder="回数" value="${r}"><input placeholder="セット" value="${s}"><input placeholder="RPE"></div>`;$('exerciseList').appendChild(d)}
+addExercise();
+function loadPlan(){$('exerciseList').innerHTML='';plans[+$('planDay').value].forEach(x=>addExercise(x[0],x[1],x[2],''));toast('プランを読み込みました')}
+function saveWorkout(){let ex=[...document.querySelectorAll('#exerciseList .exercise')].map(e=>{let i=e.querySelectorAll('input');return{name:i[0].value.trim(),weight:i[1].value,reps:i[2].value,sets:i[3].value,rpe:i[4].value}}).filter(e=>e.name);if(!ex.length)return toast('種目を入力してください');db.workouts.unshift({date:$('wDate').value||todayISO(),body:$('wBody').value,sleep:$('wSleep').value,feel:$('wFeel').value,ex});save();toast()}
+function e1rm(w,r){w=+w;r=parseInt(r)||0;return w&&r? w*(1+r/30):0}
+function refreshPR(){let map={};db.workouts.forEach(w=>w.ex.forEach(e=>{let rep=parseInt(e.reps)||0,score=e1rm(e.weight,rep);if(!map[e.name]||score>map[e.name].score)map[e.name]={score,weight:e.weight,reps:e.reps,date:w.date}}));$('prBox').innerHTML=Object.entries(map).slice(0,12).map(([n,v])=>`<div class="exercise"><b>${n}</b><div class="muted">PR目安 ${v.weight}kg × ${v.reps} / 推定1RM ${v.score.toFixed(1)}kg <span class="badge">${v.date}</span></div></div>`).join('')||'記録すると自動表示されます。'}
+function saveDaily(){let d=todayISO();db.daily[d]={posture:$('cPosture').checked,core:$('cCore').checked,train:$('cTrain').checked,protein:$('cProtein').checked,proteinG:+$('proteinG').value||0,weight:+$('quickWeight').value||0};save();toast()}
+function saveBody(){db.body.unshift({date:todayISO(),weight:$('bWeight').value,fat:$('bFat').value,waist:$('bWaist').value,bloat:$('bBloat').value,note:$('bNote').value});save();drawChart();toast()}
+function refresh(){let d=db.daily[todayISO()]||{};$('cPosture').checked=!!d.posture;$('cCore').checked=!!d.core;$('cTrain').checked=!!d.train;$('cProtein').checked=!!d.protein;$('proteinG').value=d.proteinG||'';$('quickWeight').value=d.weight||'';$('proteinKpi').textContent=d.proteinG||0;
+let s=0,dt=new Date();for(let i=0;i<365;i++){let k=dt.toISOString().slice(0,10);if(db.daily[k])s++;else if(i>0)break;dt.setDate(dt.getDate()-1)}$('streak').textContent=s;
+let n=new Date(),m=new Date(n);m.setDate(n.getDate()-((n.getDay()+6)%7));m.setHours(0,0,0,0);$('weekCount').textContent=db.workouts.filter(w=>new Date(w.date)>=m).length;
+$('recentWorkouts').innerHTML=db.workouts.slice(0,8).map(w=>`<div class="exercise"><b>${w.date}</b>${w.body?` <span class="badge">${w.body}kg</span>`:''}<div class="muted">${w.ex.map(e=>`${e.name} ${e.weight?e.weight+'kg ':''}${e.reps||''}${e.sets?' × '+e.sets:''}`).join('<br>')}</div></div>`).join('')||'まだありません。';refreshPR()}
+refresh();
+function drawChart(){let c=$('chart'),ctx=c.getContext('2d'),arr=[...db.body].reverse().slice(-20);ctx.clearRect(0,0,c.width,c.height);ctx.fillStyle='#0f1318';ctx.fillRect(0,0,c.width,c.height);if(arr.length<2){ctx.fillStyle='#98a2b3';ctx.font='16px sans-serif';ctx.fillText('2件以上記録するとグラフが表示されます',24,110);return}
+let vals=arr.flatMap(x=>[+x.weight||NaN,+x.waist||NaN]).filter(Number.isFinite),min=Math.min(...vals),max=Math.max(...vals);if(max===min)max=min+1;let x=i=>40+i*(c.width-70)/(arr.length-1),y=v=>20+(max-v)*(c.height-50)/(max-min);
+function line(key,stroke){ctx.beginPath();let started=false;arr.forEach((d,i)=>{let v=+d[key];if(!v)return;let xx=x(i),yy=y(v);if(!started){ctx.moveTo(xx,yy);started=true}else ctx.lineTo(xx,yy)});ctx.strokeStyle=stroke;ctx.lineWidth=3;ctx.stroke()}
+line('weight','#7dd3fc');line('waist','#a7f3d0');ctx.fillStyle='#98a2b3';ctx.font='12px sans-serif';ctx.fillText('青:体重 / 緑:ウエスト',14,c.height-10)}
+function buildPost(){let d=$('pDate').value||todayISO(),p=d.split('-');$('postOutput').textContent=`${+p[1]}/${+p[2]}\n${$('pTitle').value.trim()?$('pTitle').value.trim()+'\n\n':''}${$('pExercises').value.trim()}${$('pComment').value.trim()?'\n\n'+$('pComment').value.trim():''}`}
+async function copyPost(){buildPost();try{await navigator.clipboard.writeText($('postOutput').textContent);toast('コピーしました')}catch{toast('長押しでコピーしてください')}}
+const routine=[['90/90呼吸',60],['デッドバグ',60],['リバースクランチ',60],['RKCプランク',45],['グルートブリッジ',60],['深呼吸',15]];let ri=0,left=routine[0][1],elapsed=0,rt=null,total=routine.reduce((a,b)=>a+b[1],0);
+function updT(){$('routineName').textContent=routine[ri][0];$('timer').textContent=String(Math.floor(left/60)).padStart(2,'0')+':'+String(left%60).padStart(2,'0');$('timerBar').style.width=(elapsed/total*100)+'%'}
+function startRoutine(){if(rt)return;rt=setInterval(()=>{left--;elapsed++;if(left<0){ri++;if(ri>=routine.length){pauseRoutine();toast('完了！');ri=0;elapsed=0}left=routine[ri][1]}updT()},1000)}
+function pauseRoutine(){clearInterval(rt);rt=null}function resetRoutine(){pauseRoutine();ri=0;left=routine[0][1];elapsed=0;updT()}updT();
+function dl(text,name,type){let a=document.createElement('a');a.href=URL.createObjectURL(new Blob([text],{type}));a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000)}
+function exportJSON(){dl(JSON.stringify(db,null,2),'physique-log-backup.json','application/json')}
+function exportCSV(){let r=[['date','bodyweight','sleep','feel','exercise','weight','reps','sets','rpe']];db.workouts.forEach(w=>w.ex.forEach(e=>r.push([w.date,w.body,w.sleep,w.feel,e.name,e.weight,e.reps,e.sets,e.rpe])));dl('\ufeff'+r.map(x=>x.map(v=>`"${String(v??'').replaceAll('"','""')}"`).join(',')).join('\n'),'physique-workouts.csv','text/csv;charset=utf-8')}
+function importJSON(){let f=$('importFile').files[0];if(!f)return toast('ファイルを選択');let rd=new FileReader();rd.onload=()=>{try{db=JSON.parse(rd.result);save();drawChart();toast('復元しました')}catch{toast('JSONを確認してください')}};rd.readAsText(f)}
+if('serviceWorker' in navigator) window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));
+</script>
+</body>
+</html>
